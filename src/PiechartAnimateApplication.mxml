@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" backgroundColor="#C46262" preloaderChromeColor="#C46262" creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="normal" />
+		
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import mx.charts.events.ChartItemEvent;
+			import mx.charts.series.items.PieSeriesItem;
+			import mx.collections.ArrayCollection;
+			import mx.effects.easing.Elastic;
+			import mx.events.FlexEvent;
+			
+			
+			
+			[Bindable]
+			public var itemArray:ArrayCollection;
+			
+			[Bindable]
+			public var number:Number;
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				itemArray = new ArrayCollection([
+					{Type:"Open", Number:10},
+					{Type:"Closed", Number:20},
+					{Type:"Shelved", Number:30},
+					{Type:"Work in progress", Number:40}
+				]);
+			}
+			
+			
+			private function radiansToDegrees(radians:Number):Number {
+				return radians * (180 / Math.PI);
+			}
+			
+			private function pieChart_itemClick(evt:ChartItemEvent):void {
+				var item:PieSeriesItem = evt.hitData.chartItem as PieSeriesItem;
+				var degrees:Number = radiansToDegrees(item.startAngle);
+				var arr:Array = [];
+				
+				
+				//Alert.show("....selected Item from event...."+evt.hitData.id.toString());
+				if(number!=evt.hitData.id){
+					arr[evt.hitData.id]=0.2;
+					pieSeries.perWedgeExplodeRadius = arr;
+					pieSeries.startAngle -= degrees;
+					
+				}else if(number==evt.hitData.id){
+					
+					if(pieSeries.perWedgeExplodeRadius!=arr){
+						//Alert.show("inside else....");
+						pieSeries.perWedgeExplodeRadius = arr;
+						
+						
+						
+					}else if(pieSeries.perWedgeExplodeRadius==arr){
+						//Alert.show("inside if....");
+						arr[evt.hitData.id]=0.2;
+					}
+					
+					
+				}
+				
+				
+				
+				itemArray.refresh();
+				
+				var pis:PieSeriesItem=evt.hitData.chartItem as PieSeriesItem;
+				pieChartStatusLabel.text=pis.item.Type;
+				pieChartpercentageLabel.text=pis.percentValue.toFixed(1)+"%";
+				pieChartnoofIdeasLabel.text=pis.item.Number;
+				number=evt.hitData.id;
+				detailsHbox.visible=true;
+				
+				
+				
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:VGroup x="555" y="145"  id="pieChart" width="229" horizontalAlign="center" verticalAlign="top" 
+			  y.normal="70" height.normal="380">
+		
+		
+		<s:Label color="#032D82" fontSize="18" fontWeight="bold"  textAlign="justify" text="PieChart Animation"
+				 x.normal="-9" y.normal="87" width.normal="247" />
+		
+		
+		
+		
+		<mx:PieChart id="pieChart1" width="100%" height="100%" dataProvider="{itemArray}"
+					 itemClick="pieChart_itemClick(event);" showDataTips="true"
+					 height.normal="256">
+			<mx:series>
+				<mx:PieSeries displayName="Ideas" alpha="0.9" id="pieSeries" field="Number" 
+							  nameField="Type" 
+							  labelPosition="outside">
+					
+					
+					
+					
+					
+					<mx:radialStroke>
+						<mx:Stroke color="black"
+								   weight="0" caps="none" />
+					</mx:radialStroke>
+					
+					<mx:showDataEffect>
+						<mx:SeriesInterpolate duration="1500"
+											  easingFunction="{Elastic.easeInOut}" />
+					</mx:showDataEffect>
+					
+					<mx:fills>
+						
+						<mx:SolidColor color="red" alpha="1.0" />
+						<mx:SolidColor color="haloOrange" alpha="1.0" />
+						
+						<mx:SolidColor color="haloGreen" alpha="1.0" />
+						<mx:SolidColor color="haloBlue" alpha="1.0" />
+					</mx:fills>
+					
+					<mx:filters>
+						<mx:DropShadowFilter />
+					</mx:filters>
+				</mx:PieSeries>
+			</mx:series>
+		</mx:PieChart>
+		
+		
+		
+		<mx:VBox id="detailsHbox" paddingLeft="0" >
+			
+			
+			<mx:HBox width="100%"
+					 width.normal="203">
+				
+				<s:Label text="Status:" textAlign="right"
+						 width.normal="78" height.normal="19" paddingTop="6" fontWeight="bold"/>
+				<mx:Text id="pieChartStatusLabel"/>
+			</mx:HBox>
+			
+			<mx:HBox width="100%"
+					 width.normal="203">
+				
+				<s:Label text="Percentage:" textAlign="right"
+						 width.normal="78" height.normal="19" paddingTop="6" fontWeight="bold"/>
+				<mx:Text id="pieChartpercentageLabel"/>
+			</mx:HBox>
+			
+			<mx:HBox width="100%"
+					 width.normal="203">
+				
+				<s:Label text="No.Of Ideas:" textAlign="right"
+						 width.normal="78" height.normal="19" paddingTop="6" fontWeight="bold"/>
+				<mx:Text id="pieChartnoofIdeasLabel"/>
+			</mx:HBox>
+			
+		</mx:VBox>
+		
+		
+	</s:VGroup>
+</s:Application>
